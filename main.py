@@ -6,6 +6,8 @@ from tkinter import filedialog
 import os
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib.pyplot import figure
 
 
 class Ui_MainWindow(object):
@@ -374,6 +376,8 @@ class Ui_MainWindow(object):
         self.EndMedButton_4.clicked.connect(self.End_Med_4)
         self.EndMedButton_5.clicked.connect(self.End_Med_5)
         self.EndMedButton_6.clicked.connect(self.End_Med_6)
+        self.ExportButton.clicked.connect(self.Export_Button)
+        self.TempTextbox.returnPressed.connect(self.Add_Day_Button)
         #Table Widget initialization
         self.tableWidget.setRowCount(0)
         self.tableWidget.setColumnCount(3)
@@ -388,76 +392,76 @@ class Ui_MainWindow(object):
 
     def Load_Button(self):
         #File choosing dialog
-        self.tableWidget.setRowCount(0)
         root = tk.Tk()
         root.withdraw()
-        options = {}
         file_path = filedialog.askopenfilename(initialdir=os.getcwd()+"/patients", title="Select patient file",filetypes=[("Excel files", "*.xlsx")])      
-        #change title to Patient Diagram Maker + Patient name
-        patient_name = file_path.split(".xlsx",1)[0]
-        patient_name = patient_name.rsplit("/",1)[1] 
-        _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Patient Diagram Maker - "+ str(patient_name)))
-        self.PatientNameTextbox.setText(_translate("MainWindow",str(patient_name)))
-        self.DaysIntervalTextbox.setText(_translate("MainWindow",str("1")))
-        #Read excel to panda dataframe
-        excel = pd.read_excel(file_path)
-        #print(excel.iloc[0,0])  #row , column
-        count_row = excel.shape[0]
-        #Populate table with pandas dataframe
-        j=0
-        while j<count_row:
-            i=1
-            rowPosition = self.tableWidget.rowCount()
-            self.tableWidget.insertRow(rowPosition)
-            while i<4:
-                self.tableWidget.setItem(j,i-1, QTableWidgetItem(str(excel.iloc[j,i])))
-                i+=1
-            j+=1
-        self.tableWidget.resizeRowsToContents()
-        #Populate textboxes with the last row data from pandas dataframe
-        date = str(excel.iloc[count_row-1,3])
-        s = date
-        date = datetime.strptime(s, "%d/%m/%Y")
-        interval = self.DaysIntervalTextbox.text()
-        modified_date = date + timedelta(days=int(interval))
-        date = datetime.strftime(modified_date, "%d/%m/%Y")
-        self.StartingDateTextbox.setText(_translate("MainWindow",date))
-        self.DayXLabel.setText(_translate("MainWindow", "Day " + str(count_row + int(interval))))
-        meds_text = excel.iloc[count_row-1,2]
-        meds_and_doses = []
-        k = meds_text.count(";")
-        while k>=1:
-            med = meds_text.split(";",1)[0]
-            meds_text = meds_text.split(";",1)[1]
-            meds_and_doses.append(med)
-            k-=1
-        if meds_and_doses !=[]:
-            q=1
-            for medication in meds_and_doses:
-                med = medication.split("-",1)[0]
-                dose = medication.split("-",1)[1]
-                if q == 1: 
-                    self.MedNameTextbox_1.setText(_translate("MainWindow",med))
-                    self.MedDoseTextbox_1.setText(_translate("MainWindow",dose))
-                elif q==2: 
-                    self.MedNameTextbox_2.setText(_translate("MainWindow",med))
-                    self.MedDoseTextbox_2.setText(_translate("MainWindow",dose))
-                elif q==3: 
-                    self.MedNameTextbox_3.setText(_translate("MainWindow",med))
-                    self.MedDoseTextbox_3.setText(_translate("MainWindow",dose))
-                elif q==4: 
-                    self.MedNameTextbox_4.setText(_translate("MainWindow",med))
-                    self.MedDoseTextbox_4.setText(_translate("MainWindow",dose))
-                elif q==5: 
-                    self.MedNameTextbox_5.setText(_translate("MainWindow",med))
-                    self.MedDoseTextbox_5.setText(_translate("MainWindow",dose))
-                elif q==6: 
-                    self.MedNameTextbox_6.setText(_translate("MainWindow",med))
-                    self.MedDoseTextbox_6.setText(_translate("MainWindow",dose))
-                else:
-                    return 
-                q+=1
+        if file_path != "":
+            self.tableWidget.setRowCount(0)
+            #change title to Patient Diagram Maker + Patient name
+            patient_name = file_path.split(".xlsx",1)[0]
+            patient_name = patient_name.rsplit("/",1)[1] 
+            _translate = QtCore.QCoreApplication.translate
+            MainWindow.setWindowTitle(_translate("MainWindow", "Patient Diagram Maker - "+ str(patient_name)))
+            self.PatientNameTextbox.setText(_translate("MainWindow",str(patient_name)))
+            self.DaysIntervalTextbox.setText(_translate("MainWindow",str("1")))
+            #Read excel to panda dataframe
+            excel = pd.read_excel(file_path)
+            #print(excel.iloc[0,0])  #row , column
+            count_row = excel.shape[0]
+            #Populate table with pandas dataframe
+            j=0
+            while j<count_row:
+                i=1
+                rowPosition = self.tableWidget.rowCount()
+                self.tableWidget.insertRow(rowPosition)
+                while i<4:
+                    self.tableWidget.setItem(j,i-1, QTableWidgetItem(str(excel.iloc[j,i])))
+                    i+=1
+                j+=1
+            self.tableWidget.resizeRowsToContents()
+            #Populate textboxes with the last row data from pandas dataframe
+            date = str(excel.iloc[count_row-1,3])
+            s = date
+            date = datetime.strptime(s, "%d/%m/%Y")
+            interval = self.DaysIntervalTextbox.text()
+            modified_date = date + timedelta(days=int(interval))
+            date = datetime.strftime(modified_date, "%d/%m/%Y")
+            self.StartingDateTextbox.setText(_translate("MainWindow",date))
+            self.DayXLabel.setText(_translate("MainWindow", "Day " + str(count_row + int(interval))))
+            meds_text = excel.iloc[count_row-1,2]
+            meds_and_doses = []
+            k = meds_text.count(";")
+            while k>=1:
+                med = meds_text.split(";",1)[0]
+                meds_text = meds_text.split(";",1)[1]
+                meds_and_doses.append(med)
+                k-=1
+            if meds_and_doses !=[]:
+                q=1
+                for medication in meds_and_doses:
+                    med = medication.split("-",1)[0]
+                    dose = medication.split("-",1)[1]
+                    if q == 1: 
+                        self.MedNameTextbox_1.setText(_translate("MainWindow",med))
+                        self.MedDoseTextbox_1.setText(_translate("MainWindow",dose))
+                    elif q==2: 
+                        self.MedNameTextbox_2.setText(_translate("MainWindow",med))
+                        self.MedDoseTextbox_2.setText(_translate("MainWindow",dose))
+                    elif q==3: 
+                        self.MedNameTextbox_3.setText(_translate("MainWindow",med))
+                        self.MedDoseTextbox_3.setText(_translate("MainWindow",dose))
+                    elif q==4: 
+                        self.MedNameTextbox_4.setText(_translate("MainWindow",med))
+                        self.MedDoseTextbox_4.setText(_translate("MainWindow",dose))
+                    elif q==5: 
+                        self.MedNameTextbox_5.setText(_translate("MainWindow",med))
+                        self.MedDoseTextbox_5.setText(_translate("MainWindow",dose))
+                    elif q==6: 
+                        self.MedNameTextbox_6.setText(_translate("MainWindow",med))
+                        self.MedDoseTextbox_6.setText(_translate("MainWindow",dose))
+                    else:
+                        return 
+                    q+=1
    
 
     def Add_Day_Button(self):
@@ -506,6 +510,9 @@ class Ui_MainWindow(object):
                     self.tableWidget.setItem(j,1, QTableWidgetItem(str(self.tableWidget.item(j,1).text() + self.MedNameTextbox_6.text() + "-" + self.MedDoseTextbox_6.text() + ";" )))
                 else:
                     self.tableWidget.setItem(j,1, QTableWidgetItem(str(self.tableWidget.item(j,1).text() + self.MedNameTextbox_6.text() + ";" ))) 
+            if self.MedNameTextbox_1.text() == "" and self.MedNameTextbox_2.text() == "" and self.MedNameTextbox_3.text() == "" and self.MedNameTextbox_4.text() == "" and self.MedNameTextbox_5.text() == "" and self.MedNameTextbox_6.text() == "":
+                    self.tableWidget.setItem(j,1, QTableWidgetItem("^"))     
+            self.TempTextbox.setText(_translate("MainWindow",""))
 
     def Date_fixer(self):
         if self.StartingDateTextbox.text() != '' and self.DaysIntervalTextbox.text() != '' :              
@@ -529,10 +536,10 @@ class Ui_MainWindow(object):
             col_1.append(self.tableWidget.item(i, 1).text())
             col_2.append(self.tableWidget.item(i, 2).text())
         df = pd.DataFrame(
-    {'Temp': col_0,
-     'Meds': col_1,
-     'Date': col_2
-    })
+            {'Temp': col_0,
+            'Meds': col_1,
+            'Date': col_2
+            })
         patient_name = self.PatientNameTextbox.text()
         df.to_excel(os.getcwd()+ "/patients/" + patient_name + ".xlsx")
 
@@ -555,7 +562,7 @@ class Ui_MainWindow(object):
         self.TempTextbox.setText(_translate("MainWindow",""))
         self.DaysIntervalTextbox.setText(_translate("MainWindow","1"))
         self.PatientNameTextbox.setText(_translate("MainWindow",""))
-        self.StartingDateTextbox.setText(_translate("MainWindow",""))
+        self.StartingDateTextbox.setText(_translate("MainWindow",datetime.today().strftime('%d/%m/%Y')))
 
 
     def End_Med_1(self):
@@ -582,6 +589,120 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         self.MedNameTextbox_6.setText(_translate("MainWindow",""))
         self.MedDoseTextbox_6.setText(_translate("MainWindow",""))
+
+
+    def Export_Button(self):
+        #create main plot section
+        plt.figure(figsize=(11.69,8.27))
+        col_0 = []
+        col_1 = []
+        col_2 = []
+        rows = self.tableWidget.rowCount()
+        for i in range(rows):
+            col_0.append(self.tableWidget.item(i, 0).text())
+            col_1.append(self.tableWidget.item(i, 1).text())
+            col_2.append(self.tableWidget.item(i, 2).text())
+        plt.ylabel('Temparature in Celsius')
+        plt.xlabel('Date')
+        row = list(range(0, rows))
+        col = [float(i) for i in col_0]
+        plt.plot(row, col,'--go')
+        for s, d in zip(col, row):
+            plt.annotate(s, xy = (d,s ))
+        #create meds subplots
+        meds_all = []
+        for item in col_1:
+            meds_all.extend(item.split(";"))
+        df = pd.DataFrame(
+            {
+            'Meds': meds_all,
+            })
+        meds_unique = df.Meds.unique()
+        meds_unique_final = []
+        for unique in meds_unique:
+            if unique != "" and unique != "^":
+                meds_unique_final.append(unique)
+        med1 = [None]*rows
+        med2 = [None]*rows
+        med3 = [None]*rows
+        med4 = [None]*rows
+        med5 = [None]*rows
+        med6 = [None]*rows
+        k = 0
+        j = len(meds_unique_final)
+        while j < 6: 
+            meds_unique_final.append("None")
+            j += 1
+        for item in col_1:
+            if meds_unique_final[0] in item:
+                med1[k] = 43
+            if meds_unique_final[1] in item:
+                med2[k] = 43.5
+            if meds_unique_final[2] in item:
+                med3[k] = 44    
+            if meds_unique_final[3] in item:
+                med4[k] = 44.5
+            if meds_unique_final[4] in item:
+                med5[k] = 45
+            if meds_unique_final[5] in item:
+                med6[k] = 45.5
+            k += 1
+
+
+        plt.plot(row, med1)
+        x1 = self.indexer(med1)
+        plt.text(x1,43, meds_unique_final[0])
+        plt.plot(row, med2, "--")
+        x2 = self.indexer(med2)
+        plt.text(x2,43.5, meds_unique_final[1])
+        plt.plot(row, med3, "-.")
+        x3 = self.indexer(med3)
+        plt.text(x3,44, meds_unique_final[2])
+        plt.plot(row, med4, ":")
+        x4 = self.indexer(med4)
+        plt.text(x4,44.5, meds_unique_final[3])
+        plt.plot(row, med5)
+        x5 = self.indexer(med5)
+        plt.text(x5,45, meds_unique_final[4])
+        plt.plot(row, med6, "--")
+        x6 = self.indexer(med6)
+        plt.text(x6,45.5, meds_unique_final[5])
+        adder = 0
+
+        if med1 != [None]*rows:
+            adder += 0.5
+        
+        if med2 != [None]*rows:
+            adder += 0.5
+        
+        if med3 != [None]*rows:
+            adder += 0.5
+        
+        if med4 != [None]*rows:
+            adder += 0.5
+        
+        if med5 != [None]*rows:
+            adder += 0.5
+
+        if med6 != [None]*rows:
+            adder += 0.5
+
+
+        plt.ylim((34, 43 + adder)) 
+        patient_name = self.PatientNameTextbox.text()
+        plt.savefig(os.getcwd()+ "/patients/" + patient_name + ".png")
+        plt.show()  
+        
+
+
+    def indexer(self,listeru):
+        i = 0
+        for item in listeru:
+            if item != None:
+                return (i)
+            i += 1
+        return (9999)
+
 
 if __name__ == "__main__":
     import sys
