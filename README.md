@@ -1,8 +1,8 @@
 # Patient Diagram Maker
 
 A Temparature-day-medication diagram maker to be used to visualise data.
-![Main Program]()
-![Output]()
+![Main Program](images/1.png)
+![Output](images/Test Patient.png)
 
 # Installation 
 
