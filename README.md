@@ -10,4 +10,4 @@ A *badly written* Temparature-day-medication diagram maker that can be used to v
 
 Install dependacies on the main.py, the exemaker.bat can be used to create an exe (you need pyinstaller installed)
 
-# This project will not be maintaned at all
+# This project will not be maintained at all
