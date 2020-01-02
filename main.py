@@ -602,11 +602,13 @@ class Ui_MainWindow(object):
             col_0.append(self.tableWidget.item(i, 0).text())
             col_1.append(self.tableWidget.item(i, 1).text())
             col_2.append(self.tableWidget.item(i, 2).text())
+            last_date = self.tableWidget.item(i, 2).text()
         plt.ylabel('Temparature in Celsius')
-        plt.xlabel('Date')
+        plt.xlabel('Dates: ' + self.tableWidget.item(0, 2).text() + " - " + last_date)
         row = list(range(0, rows))
         col = [float(i) for i in col_0]
         plt.plot(row, col,'--go')
+        plt.rc('font', size=15)
         for s, d in zip(col, row):
             plt.annotate(s, xy = (d,s ))
         #create meds subplots
@@ -647,8 +649,6 @@ class Ui_MainWindow(object):
             if meds_unique_final[5] in item:
                 med6[k] = 45.5
             k += 1
-
-
         plt.plot(row, med1)
         x1 = self.indexer(med1)
         plt.text(x1,43, meds_unique_final[0])
@@ -690,6 +690,9 @@ class Ui_MainWindow(object):
 
         plt.ylim((34, 43 + adder)) 
         patient_name = self.PatientNameTextbox.text()
+        plt.tick_params(axis='both', which='major', labelsize=10, labelbottom = True, bottom=False, top = False, labeltop=True)
+        plt.xticks(np.arange(0, rows, step=1))
+        plt.grid(True)
         plt.savefig(os.getcwd()+ "/patients/" + patient_name + ".png")
         plt.show()  
         
