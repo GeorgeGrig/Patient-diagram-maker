@@ -1,6 +1,6 @@
 # Patient Diagram Maker
 
-A Temparature-day-medication diagram maker that can be used to visualise data.
+A *badly written* Temparature-day-medication diagram maker that can be used to visualise data.
 
 ![Main Program](images/1.png)
 
