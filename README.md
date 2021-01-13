@@ -6,8 +6,7 @@ A *badly written* Temparature-day-medication diagram maker that can be used to v
 
 ![Output](https://github.com/GeorgeGrig/patient-diagram-maker/blob/master/images/Test%20Patient.png)
 
-# Installation 
+## Getting started  
+* In order to run the script you need to install all the required prerequisites.  
+* exemaker.bat can be used to create an exe (you need pyinstaller installed).  
 
-Install dependacies on the main.py, the exemaker.bat can be used to create an exe (you need pyinstaller installed)
-
-# This project will not be maintained at all
